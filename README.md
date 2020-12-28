@@ -1,2 +1,2 @@
-# node-http-instance
-http
+# http-instance
+http-instance
