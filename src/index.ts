@@ -1,6 +1,5 @@
 import * as http from 'http';
 import * as https from 'https';
-import * as querystring from 'querystring';
 
 import { ResultOk, ResultFail, ResultOK, ResultFAIL } from 'node-result';
 
@@ -9,16 +8,16 @@ type HttpInstanceOptions = {
   timeout?: number;
 };
 
-type HttpResponse = {
-  status: number;
-  headers: object;
-  data?: object | string;
-};
-
 type HttpRequestOptions = {
   url: URL;
   options: http.RequestOptions | https.RequestOptions;
   data?: object;
+};
+
+type HttpResponse<Data> = {
+  status: number;
+  headers: object;
+  data?: Data;
 };
 
 export class HttpInstance {
@@ -36,7 +35,7 @@ export class HttpInstance {
     this.timeout = options.timeout || 1000;
   }
 
-  private request(options: HttpRequestOptions): Promise<ResultOK<HttpResponse> | ResultFAIL<Error>> {
+  private request<Data>(options: HttpRequestOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = options.url;
     const httpRequest: (
       url: URL,
@@ -48,8 +47,8 @@ export class HttpInstance {
         const request = httpRequest(url, options.options, (response) => {
           const status = response.statusCode!;
           const headers = response.headers;
-          const contentTypeHeader = headers['content-type'];
-          if (!contentTypeHeader) {
+          const contentType = headers['content-type'];
+          if (!contentType) {
             resolve(
               ResultOk({
                 status,
@@ -57,9 +56,7 @@ export class HttpInstance {
               }),
             );
           }
-          const contentTypeMatch = contentTypeHeader!.match(/(?<contentType>[a-z]+\/[a-z]+).*/);
-          const contentType = contentTypeMatch?.groups?.contentType;
-          if (contentType !== 'application/json' && contentType !== 'text/plain' && contentType !== 'text/html') {
+          if (!contentType!.includes('application/json')) {
             resolve(ResultFail(new TypeError('Unsupported content type.')));
           }
           let buffer = Buffer.alloc(0);
@@ -68,24 +65,13 @@ export class HttpInstance {
             (chunk) => (buffer = Buffer.concat([buffer, chunk], Buffer.byteLength(buffer) + Buffer.byteLength(chunk))),
           );
           response.on('end', () => {
-            if (contentType === 'application/json') {
-              resolve(
-                ResultOk({
-                  status,
-                  headers,
-                  data: JSON.parse(buffer.toString()),
-                }),
-              );
-            }
-            if (contentType === 'text/plain' || contentType === 'text/html') {
-              resolve(
-                ResultOk({
-                  status,
-                  headers,
-                  data: buffer.toString(),
-                }),
-              );
-            }
+            resolve(
+              ResultOk({
+                status,
+                headers,
+                data: JSON.parse(buffer.toString()),
+              }),
+            );
           });
         });
         request.on('error', (error) => resolve(ResultFail(error)));
@@ -104,9 +90,9 @@ export class HttpInstance {
     });
   }
 
-  get(path: string) {
+  get<Data>(path: string) {
     const url = new URL(path, this.url);
-    return this.request({
+    return this.request<Data>({
       url,
       options: Object.assign(this.options, {
         method: 'GET',
@@ -114,9 +100,9 @@ export class HttpInstance {
     });
   }
 
-  delete(path: string) {
+  delete<Data>(path: string) {
     const url = new URL(path, this.url);
-    return this.request({
+    return this.request<Data>({
       url,
       options: Object.assign(this.options, {
         method: 'DELETE',
@@ -124,9 +110,9 @@ export class HttpInstance {
     });
   }
 
-  post(path: string, data: object) {
+  post<Data>(path: string, data: object) {
     const url = new URL(path, this.url);
-    return this.request({
+    return this.request<Data>({
       url,
       options: Object.assign(this.options, {
         method: 'POST',
@@ -135,9 +121,9 @@ export class HttpInstance {
     });
   }
 
-  put(path: string, data: object) {
+  put<Data>(path: string, data: object) {
     const url = new URL(path, this.url);
-    return this.request({
+    return this.request<Data>({
       url,
       options: Object.assign(this.options, {
         method: 'PUT',
