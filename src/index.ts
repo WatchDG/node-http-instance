@@ -110,7 +110,7 @@ export class HttpInstance {
     });
   }
 
-  post<Data>(path: string, data: object) {
+  post<Data>(path: string, data?: object) {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
@@ -121,7 +121,7 @@ export class HttpInstance {
     });
   }
 
-  put<Data>(path: string, data: object) {
+  put<Data>(path: string, data?: object) {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
