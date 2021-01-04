@@ -46,6 +46,7 @@ export class HttpInstance {
       try {
         const request = httpRequest(url, options.options, (response) => {
           const status = response.statusCode!;
+          if (status < 200 || status >= 300) resolve(ResultFail(new Error(`Non success status code. ${status}`)));
           const headers = response.headers;
           const contentType = headers['content-type'];
           if (!contentType) {
