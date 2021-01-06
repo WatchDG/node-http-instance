@@ -6,6 +6,7 @@ import { ResultOk, ResultFail, ResultOK, ResultFAIL } from 'node-result';
 type HttpInstanceOptions = {
   baseUrl: string;
   timeout?: number;
+  headers?: { [key: string]: string };
 };
 
 type HttpRequestOptions = {
@@ -28,11 +29,14 @@ export class HttpInstance {
   constructor(options: HttpInstanceOptions) {
     this.url = new URL(options.baseUrl);
     this.options = {
-      headers: {
-        Accept: 'application/json',
-      },
+      headers: Object.assign(
+        {
+          Accept: 'application/json',
+        },
+        options.headers,
+      ),
     };
-    this.timeout = options.timeout || 1000;
+    this.timeout = options.timeout ?? 1000;
   }
 
   private request<Data>(options: HttpRequestOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
