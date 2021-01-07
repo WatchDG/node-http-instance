@@ -13,12 +13,12 @@ type HttpInstanceOptions = {
 type HttpRequestOptions = {
   url: URL;
   options: http.RequestOptions | https.RequestOptions;
-  data?: object;
+  data?: Record<any, any>;
 };
 
 type HttpResponse<Data> = {
   status: number;
-  headers: object;
+  headers: http.IncomingHttpHeaders;
   data?: Data;
 };
 
@@ -32,10 +32,10 @@ export class HttpInstance {
     this.options = {
       headers: Object.assign(
         {
-          Accept: 'application/json',
+          Accept: 'application/json'
         },
-        options.headers,
-      ),
+        options.headers
+      )
     };
     this.timeout = options.timeout ?? 1000;
   }
@@ -52,10 +52,10 @@ export class HttpInstance {
           const contentType = headers['content-type'];
           if (!contentType) {
             resolve(
-              ResultOk({
+              ResultOk<HttpResponse<Data>>({
                 status,
-                headers,
-              }),
+                headers
+              })
             );
           }
           if (!contentType!.includes('application/json')) {
@@ -64,15 +64,15 @@ export class HttpInstance {
           let buffer = Buffer.alloc(0);
           response.on(
             'data',
-            (chunk) => (buffer = Buffer.concat([buffer, chunk], Buffer.byteLength(buffer) + Buffer.byteLength(chunk))),
+            (chunk) => (buffer = Buffer.concat([buffer, chunk], Buffer.byteLength(buffer) + Buffer.byteLength(chunk)))
           );
           response.on('end', () => {
             resolve(
               ResultOk({
                 status,
                 headers,
-                data: JSON.parse(buffer.toString()),
-              }),
+                data: JSON.parse(buffer.toString())
+              })
             );
           });
         });
@@ -97,8 +97,8 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'GET',
-      }),
+        method: 'GET'
+      })
     });
   }
 
@@ -107,30 +107,30 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'DELETE',
-      }),
+        method: 'DELETE'
+      })
     });
   }
 
-  post<Data>(path: string, data?: object): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  post<Data>(path: string, data?: Record<string, any>): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'POST',
+        method: 'POST'
       }),
-      data,
+      data
     });
   }
 
-  put<Data>(path: string, data?: object): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  put<Data>(path: string, data?: Record<string, any>): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'PUT',
+        method: 'PUT'
       }),
-      data,
+      data
     });
   }
 }
