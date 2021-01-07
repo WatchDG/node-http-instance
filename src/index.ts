@@ -13,7 +13,7 @@ type HttpInstanceOptions = {
 type HttpRequestOptions = {
   url: URL;
   options: http.RequestOptions | https.RequestOptions;
-  data?: Record<any, any>;
+  data?: Record<never, never>;
 };
 
 type HttpResponse<Data> = {
@@ -112,7 +112,7 @@ export class HttpInstance {
     });
   }
 
-  post<Data>(path: string, data?: Record<string, any>): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  post<Data>(path: string, data?: Record<string, never>): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
@@ -123,7 +123,7 @@ export class HttpInstance {
     });
   }
 
-  put<Data>(path: string, data?: Record<string, any>): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  put<Data>(path: string, data?: Record<string, never>): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
