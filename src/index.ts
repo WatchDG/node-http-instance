@@ -1,5 +1,6 @@
 import * as http from 'http';
 import * as https from 'https';
+import { URL } from 'url';
 
 import { ResultOk, ResultFail, ResultOK, ResultFAIL } from 'node-result';
 
@@ -41,11 +42,7 @@ export class HttpInstance {
 
   private request<Data>(options: HttpRequestOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = options.url;
-    const httpRequest: (
-      url: URL,
-      options: http.RequestOptions | https.RequestOptions,
-      callback?: (response: http.IncomingMessage) => void,
-    ) => http.ClientRequest = url.protocol === 'http:' ? http.request : https.request;
+    const httpRequest = url.protocol === 'http:' ? http.request : https.request;
     return new Promise((resolve) => {
       try {
         const request = httpRequest(url, options.options, (response) => {
@@ -95,7 +92,7 @@ export class HttpInstance {
     });
   }
 
-  get<Data>(path: string) {
+  get<Data>(path: string): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
@@ -105,7 +102,7 @@ export class HttpInstance {
     });
   }
 
-  delete<Data>(path: string) {
+  delete<Data>(path: string): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
@@ -115,7 +112,7 @@ export class HttpInstance {
     });
   }
 
-  post<Data>(path: string, data?: object) {
+  post<Data>(path: string, data?: object): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
@@ -126,7 +123,7 @@ export class HttpInstance {
     });
   }
 
-  put<Data>(path: string, data?: object) {
+  put<Data>(path: string, data?: object): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
