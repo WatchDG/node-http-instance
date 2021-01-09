@@ -13,7 +13,7 @@ type HttpInstanceOptions = {
 type HttpRequestOptions = {
   url: URL;
   options: http.RequestOptions | https.RequestOptions;
-  data?: Record<never, never>;
+  data?: { [key: string]: never };
 };
 
 type HttpResponse<Data> = {
@@ -32,10 +32,10 @@ export class HttpInstance {
     this.options = {
       headers: Object.assign(
         {
-          Accept: 'application/json'
+          'Accept': 'application/json',
         },
-        options.headers
-      )
+        options.headers,
+      ),
     };
     this.timeout = options.timeout ?? 1000;
   }
@@ -46,35 +46,42 @@ export class HttpInstance {
     return new Promise((resolve) => {
       try {
         const request = httpRequest(url, options.options, (response) => {
-          const status = response.statusCode!;
-          if (status < 200 || status >= 300) resolve(ResultFail(new Error(`Non success status code. ${status}`)));
-          const headers = response.headers;
-          const contentType = headers['content-type'];
-          if (!contentType) {
-            resolve(
-              ResultOk<HttpResponse<Data>>({
-                status,
-                headers
-              })
-            );
+          const status = response.statusCode;
+          if (status) {
+            if (status < 200 || status >= 300) resolve(ResultFail(new Error(`Non success status code. ${status}`)));
+            const headers = response.headers;
+            const contentType = headers['content-type'];
+            if (contentType) {
+              if (contentType.includes('application/json')) {
+                let buffer = Buffer.alloc(0);
+                response.on(
+                  'data',
+                  (chunk) =>
+                    (buffer = Buffer.concat([buffer, chunk], Buffer.byteLength(buffer) + Buffer.byteLength(chunk))),
+                );
+                response.on('end', () => {
+                  resolve(
+                    ResultOk({
+                      status,
+                      headers,
+                      data: JSON.parse(buffer.toString()),
+                    }),
+                  );
+                });
+              } else {
+                resolve(ResultFail(new TypeError('Unsupported content type.')));
+              }
+            } else {
+              resolve(
+                ResultOk<HttpResponse<Data>>({
+                  status,
+                  headers,
+                }),
+              );
+            }
+          } else {
+            resolve(ResultFail(new Error('Unknown status code.')));
           }
-          if (!contentType!.includes('application/json')) {
-            resolve(ResultFail(new TypeError('Unsupported content type.')));
-          }
-          let buffer = Buffer.alloc(0);
-          response.on(
-            'data',
-            (chunk) => (buffer = Buffer.concat([buffer, chunk], Buffer.byteLength(buffer) + Buffer.byteLength(chunk)))
-          );
-          response.on('end', () => {
-            resolve(
-              ResultOk({
-                status,
-                headers,
-                data: JSON.parse(buffer.toString())
-              })
-            );
-          });
         });
         request.on('error', (error) => resolve(ResultFail(error)));
         request.setTimeout(this.timeout);
@@ -97,8 +104,8 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'GET'
-      })
+        method: 'GET',
+      }),
     });
   }
 
@@ -107,8 +114,8 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'DELETE'
-      })
+        method: 'DELETE',
+      }),
     });
   }
 
@@ -117,9 +124,9 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'POST'
+        method: 'POST',
       }),
-      data
+      data,
     });
   }
 
@@ -128,9 +135,9 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'PUT'
+        method: 'PUT',
       }),
-      data
+      data,
     });
   }
 }
