@@ -37,6 +37,7 @@
     "@typescript-eslint/parser": "^4.12.0",
     "eslint": "^7.17.0",
     "husky": "^5.0.6",
+    "pinst": "^2.1.1",
     "prettier": "^2.2.1",
     "typescript": "^4.1.3"
   }
