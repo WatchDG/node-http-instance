@@ -32,10 +32,10 @@ export class HttpInstance {
     this.options = {
       headers: Object.assign(
         {
-          'Accept': 'application/json',
+          Accept: 'application/json'
         },
-        options.headers,
-      ),
+        options.headers
+      )
     };
     this.timeout = options.timeout ?? 1000;
   }
@@ -57,15 +57,15 @@ export class HttpInstance {
                 response.on(
                   'data',
                   (chunk) =>
-                    (buffer = Buffer.concat([buffer, chunk], Buffer.byteLength(buffer) + Buffer.byteLength(chunk))),
+                    (buffer = Buffer.concat([buffer, chunk], Buffer.byteLength(buffer) + Buffer.byteLength(chunk)))
                 );
                 response.on('end', () => {
                   resolve(
                     ResultOk({
                       status,
                       headers,
-                      data: JSON.parse(buffer.toString()),
-                    }),
+                      data: JSON.parse(buffer.toString())
+                    })
                   );
                 });
               } else {
@@ -75,8 +75,8 @@ export class HttpInstance {
               resolve(
                 ResultOk<HttpResponse<Data>>({
                   status,
-                  headers,
-                }),
+                  headers
+                })
               );
             }
           } else {
@@ -104,8 +104,8 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'GET',
-      }),
+        method: 'GET'
+      })
     });
   }
 
@@ -114,8 +114,8 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'DELETE',
-      }),
+        method: 'DELETE'
+      })
     });
   }
 
@@ -124,9 +124,9 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'POST',
+        method: 'POST'
       }),
-      data,
+      data
     });
   }
 
@@ -135,9 +135,9 @@ export class HttpInstance {
     return this.request<Data>({
       url,
       options: Object.assign(this.options, {
-        method: 'PUT',
+        method: 'PUT'
       }),
-      data,
+      data
     });
   }
 }
