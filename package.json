@@ -13,9 +13,12 @@
     "email": "baranov@w3m.co"
   },
   "repository": "github:WatchDG/node-http-instance",
+  "private": false,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "private": false,
+  "files": [
+    "lib/**/*"
+  ],
   "scripts": {
     "fmt": "npx prettier --write \"src/**/*.ts\"",
     "lint": "eslint --ext=ts src",
