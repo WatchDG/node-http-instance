@@ -119,7 +119,7 @@ export class HttpInstance {
     });
   }
 
-  post<Data>(path: string, data?: Record<string, never>): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  post<Data>(path: string, data?: {[Key: string]: never}): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
@@ -130,7 +130,7 @@ export class HttpInstance {
     });
   }
 
-  put<Data>(path: string, data?: Record<string, never>): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  put<Data>(path: string, data?: {[Key: string]: never}): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
