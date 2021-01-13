@@ -13,7 +13,7 @@ type HttpInstanceOptions = {
 type HttpRequestOptions = {
   url: URL;
   options: http.RequestOptions | https.RequestOptions;
-  data?: { [key: string]: unknown };
+  data?: { [key: string]: unknown } | string;
 };
 
 type HttpResponse<Data> = {
@@ -24,7 +24,7 @@ type HttpResponse<Data> = {
 
 export class HttpInstance {
   private readonly url: URL;
-  private readonly options: http.RequestOptions | https.RequestOptions;
+  private readonly options: (http.RequestOptions | https.RequestOptions) & { headers: { [Key: string]: string } };
   private readonly timeout: number;
 
   constructor(options: HttpInstanceOptions) {
@@ -91,6 +91,13 @@ export class HttpInstance {
           request.setHeader('Content-Type', 'application/json');
           request.setHeader('Content-Length', dataLength);
           request.write(data);
+        }
+        if (typeof options.data === 'string') {
+          const dataLength = Buffer.byteLength(options.data);
+          const contentType = this.options.headers['Content-Type'] ?? 'text/plain';
+          request.setHeader('Content-Type', contentType);
+          request.setHeader('Content-Length', dataLength);
+          request.write(options.data);
         }
         request.end();
       } catch (error) {
