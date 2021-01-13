@@ -22,6 +22,10 @@ type HttpResponse<Data> = {
   data?: Data;
 };
 
+type HttpMethodOptions = {
+  headers?: { [key: string]: string };
+};
+
 export class HttpInstance {
   private readonly url: URL;
   private readonly options: (http.RequestOptions | https.RequestOptions) & { headers: { [Key: string]: string } };
@@ -106,50 +110,68 @@ export class HttpInstance {
     });
   }
 
-  get<Data>(path: string): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  get<Data>(path: string, options?: HttpMethodOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
-      options: Object.assign(this.options, {
-        method: 'GET'
-      })
+      options: Object.assign(
+        this.options,
+        {
+          method: 'GET'
+        },
+        options
+      )
     });
   }
 
-  delete<Data>(path: string): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  delete<Data>(path: string, options?: HttpMethodOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
-      options: Object.assign(this.options, {
-        method: 'DELETE'
-      })
+      options: Object.assign(
+        this.options,
+        {
+          method: 'DELETE'
+        },
+        options
+      )
     });
   }
 
   post<Data>(
     path: string,
-    data?: { [Key: string]: unknown }
+    data?: { [Key: string]: unknown },
+    options?: HttpMethodOptions
   ): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
-      options: Object.assign(this.options, {
-        method: 'POST'
-      }),
+      options: Object.assign(
+        this.options,
+        {
+          method: 'POST'
+        },
+        options
+      ),
       data
     });
   }
 
   put<Data>(
     path: string,
-    data?: { [Key: string]: unknown }
+    data?: { [Key: string]: unknown },
+    options?: HttpMethodOptions
   ): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     return this.request<Data>({
       url,
-      options: Object.assign(this.options, {
-        method: 'PUT'
-      }),
+      options: Object.assign(
+        this.options,
+        {
+          method: 'PUT'
+        },
+        options
+      ),
       data
     });
   }
