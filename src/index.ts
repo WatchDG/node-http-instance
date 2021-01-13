@@ -112,29 +112,21 @@ export class HttpInstance {
 
   get<Data>(path: string, options?: HttpMethodOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
+    const requestOptions = Object.assign({}, this.options, { method: 'GET' });
+    Object.assign(requestOptions.headers, options?.headers);
     return this.request<Data>({
       url,
-      options: Object.assign(
-        this.options,
-        {
-          method: 'GET'
-        },
-        options
-      )
+      options: requestOptions
     });
   }
 
   delete<Data>(path: string, options?: HttpMethodOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
+    const requestOptions = Object.assign({}, this.options, { method: 'DELETE' });
+    Object.assign(requestOptions.headers, options?.headers);
     return this.request<Data>({
       url,
-      options: Object.assign(
-        this.options,
-        {
-          method: 'DELETE'
-        },
-        options
-      )
+      options: requestOptions
     });
   }
 
@@ -144,15 +136,11 @@ export class HttpInstance {
     options?: HttpMethodOptions
   ): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
+    const requestOptions = Object.assign({}, this.options, { method: 'POST' });
+    Object.assign(requestOptions.headers, options?.headers);
     return this.request<Data>({
       url,
-      options: Object.assign(
-        this.options,
-        {
-          method: 'POST'
-        },
-        options
-      ),
+      options: requestOptions,
       data
     });
   }
@@ -163,15 +151,11 @@ export class HttpInstance {
     options?: HttpMethodOptions
   ): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
+    const requestOptions = Object.assign({}, this.options, { method: 'PUT' });
+    Object.assign(requestOptions.headers, options?.headers);
     return this.request<Data>({
       url,
-      options: Object.assign(
-        this.options,
-        {
-          method: 'PUT'
-        },
-        options
-      ),
+      options: requestOptions,
       data
     });
   }
