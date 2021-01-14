@@ -113,7 +113,9 @@ export class HttpInstance {
   get<Data>(path: string, options?: HttpMethodOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'GET' });
-    Object.assign(requestOptions.headers, options?.headers);
+    if(options && options.headers){
+      Object.assign(requestOptions.headers, options.headers);
+    }
     return this.request<Data>({
       url,
       options: requestOptions
@@ -123,7 +125,9 @@ export class HttpInstance {
   delete<Data>(path: string, options?: HttpMethodOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'DELETE' });
-    Object.assign(requestOptions.headers, options?.headers);
+    if(options && options.headers){
+      Object.assign(requestOptions.headers, options.headers);
+    }
     return this.request<Data>({
       url,
       options: requestOptions
@@ -137,7 +141,9 @@ export class HttpInstance {
   ): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'POST' });
-    Object.assign(requestOptions.headers, options?.headers);
+    if(options && options.headers){
+      Object.assign(requestOptions.headers, options.headers);
+    }
     return this.request<Data>({
       url,
       options: requestOptions,
@@ -152,7 +158,9 @@ export class HttpInstance {
   ): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'PUT' });
-    Object.assign(requestOptions.headers, options?.headers);
+    if(options && options.headers){
+      Object.assign(requestOptions.headers, options.headers);
+    }
     return this.request<Data>({
       url,
       options: requestOptions,
