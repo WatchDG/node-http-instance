@@ -2,7 +2,7 @@ import * as http from 'http';
 import * as https from 'https';
 import { URL } from 'url';
 
-import { ResultOk, ResultFail, ResultOK, ResultFAIL } from 'node-result';
+import { ResultOk, ResultFail, ReturningResultAsync } from 'node-result';
 
 type HttpInstanceOptions = {
   baseUrl: string;
@@ -10,16 +10,18 @@ type HttpInstanceOptions = {
   headers?: { [key: string]: string };
 };
 
+type HttpRequestData = { [Key: string]: unknown } | string;
+
 type HttpRequestOptions = {
   url: URL;
   options: http.RequestOptions | https.RequestOptions;
-  data?: { [key: string]: unknown } | string;
+  data?: HttpRequestData;
 };
 
-type HttpResponse<Data> = {
+type HttpResponse<D> = {
   status: number;
   headers: http.IncomingHttpHeaders;
-  data?: Data;
+  data?: D;
 };
 
 type HttpMethodOptions = {
@@ -44,7 +46,7 @@ export class HttpInstance {
     this.timeout = options.timeout ?? 1000;
   }
 
-  private request<Data>(options: HttpRequestOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  private request<D>(options: HttpRequestOptions): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = options.url;
     const httpRequest = url.protocol === 'http:' ? http.request : https.request;
     return new Promise((resolve) => {
@@ -77,7 +79,7 @@ export class HttpInstance {
               }
             } else {
               resolve(
-                ResultOk<HttpResponse<Data>>({
+                ResultOk<HttpResponse<D>>({
                   status,
                   headers
                 })
@@ -110,58 +112,58 @@ export class HttpInstance {
     });
   }
 
-  get<Data>(path: string, options?: HttpMethodOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  get<D>(path: string, options?: HttpMethodOptions): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'GET' });
     if (options && options.headers) {
       Object.assign(requestOptions.headers, options.headers);
     }
-    return this.request<Data>({
+    return this.request<D>({
       url,
       options: requestOptions
     });
   }
 
-  delete<Data>(path: string, options?: HttpMethodOptions): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  delete<D>(path: string, options?: HttpMethodOptions): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'DELETE' });
     if (options && options.headers) {
       Object.assign(requestOptions.headers, options.headers);
     }
-    return this.request<Data>({
+    return this.request<D>({
       url,
       options: requestOptions
     });
   }
 
-  post<Data>(
+  post<D>(
     path: string,
-    data?: { [Key: string]: unknown },
+    data?: HttpRequestData,
     options?: HttpMethodOptions
-  ): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  ): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'POST' });
     if (options && options.headers) {
       Object.assign(requestOptions.headers, options.headers);
     }
-    return this.request<Data>({
+    return this.request<D>({
       url,
       options: requestOptions,
       data
     });
   }
 
-  put<Data>(
+  put<D>(
     path: string,
-    data?: { [Key: string]: unknown },
+    data?: HttpRequestData,
     options?: HttpMethodOptions
-  ): Promise<ResultOK<HttpResponse<Data>> | ResultFAIL<Error>> {
+  ): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'PUT' });
     if (options && options.headers) {
       Object.assign(requestOptions.headers, options.headers);
     }
-    return this.request<Data>({
+    return this.request<D>({
       url,
       options: requestOptions,
       data

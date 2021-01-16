@@ -3,7 +3,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "lib": ["es5", "es6"],
-    "target": "es6",
+    "target": "es2019",
     "sourceMap": false,
     "declaration": true,
     "removeComments": true,
