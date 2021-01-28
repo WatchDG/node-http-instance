@@ -26,6 +26,7 @@ type HttpResponse<D> = {
 
 type HttpMethodOptions = {
   headers?: { [key: string]: string };
+  params?: { [key: string]: string };
 };
 
 export class HttpInstance {
@@ -115,8 +116,15 @@ export class HttpInstance {
   get<D>(path: string, options?: HttpMethodOptions): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'GET' });
-    if (options && options.headers) {
-      Object.assign(requestOptions.headers, options.headers);
+    if (options) {
+      if (options.params) {
+        for (const param of Object.keys(options.params)) {
+          url.searchParams.append(param, options.params[param]);
+        }
+      }
+      if (options.headers) {
+        Object.assign(requestOptions.headers, options.headers);
+      }
     }
     return this.request<D>({
       url,
@@ -127,8 +135,15 @@ export class HttpInstance {
   delete<D>(path: string, options?: HttpMethodOptions): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'DELETE' });
-    if (options && options.headers) {
-      Object.assign(requestOptions.headers, options.headers);
+    if (options) {
+      if (options.params) {
+        for (const param of Object.keys(options.params)) {
+          url.searchParams.append(param, options.params[param]);
+        }
+      }
+      if (options.headers) {
+        Object.assign(requestOptions.headers, options.headers);
+      }
     }
     return this.request<D>({
       url,
@@ -143,8 +158,15 @@ export class HttpInstance {
   ): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'POST' });
-    if (options && options.headers) {
-      Object.assign(requestOptions.headers, options.headers);
+    if (options) {
+      if (options.params) {
+        for (const param of Object.keys(options.params)) {
+          url.searchParams.append(param, options.params[param]);
+        }
+      }
+      if (options.headers) {
+        Object.assign(requestOptions.headers, options.headers);
+      }
     }
     return this.request<D>({
       url,
@@ -160,8 +182,15 @@ export class HttpInstance {
   ): ReturningResultAsync<HttpResponse<D>, Error> {
     const url = new URL(path, this.url);
     const requestOptions = Object.assign({}, this.options, { method: 'PUT' });
-    if (options && options.headers) {
-      Object.assign(requestOptions.headers, options.headers);
+    if (options) {
+      if (options.params) {
+        for (const param of Object.keys(options.params)) {
+          url.searchParams.append(param, options.params[param]);
+        }
+      }
+      if (options.headers) {
+        Object.assign(requestOptions.headers, options.headers);
+      }
     }
     return this.request<D>({
       url,
