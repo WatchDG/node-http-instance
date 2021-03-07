@@ -102,15 +102,10 @@ export class HttpInstance {
   private static bodyToData<D>(requestResponse: RequestResponse): HttpResponse<D> {
     const { status, headers, body } = requestResponse;
     const contentType = headers['content-type'];
-    if (body) {
-      switch (contentType) {
-        case 'application/json':
-          return { status, headers, data: JSON.parse(body.toString()) };
-        case 'html/text':
-          return { status, headers, data: (body.toString() as unknown) as D };
-        default:
-          return { status, headers };
-      }
+    if (body && contentType) {
+      if (contentType.includes('application/json')) return { status, headers, data: JSON.parse(body.toString()) };
+      if (contentType.includes('html/text')) return { status, headers, data: (body.toString() as unknown) as D };
+      return { status, headers };
     }
     return { status, headers };
   }
