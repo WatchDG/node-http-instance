@@ -30,7 +30,7 @@
     "run": "npx ts-node src/index.ts"
   },
   "dependencies": {
-    "http-instance-request": "^0.6.0",
+    "http-instance-request": "^0.7.0",
     "node-result": "^10.0.0"
   },
   "devDependencies": {
