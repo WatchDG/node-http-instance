@@ -2,7 +2,8 @@ import * as http from 'http';
 import * as https from 'https';
 import { URL } from 'url';
 
-import { ResultOk, ReturningResultAsync } from 'node-result';
+import { ok } from 'node-result';
+import type { TResultAsync } from 'node-result';
 
 import { request, RequestResponse, HttpOptions } from 'http-instance-request';
 
@@ -12,10 +13,10 @@ type HttpInstanceOptions = {
   headers?: { [key: string]: string };
 };
 
-type HttpResponse<D> = {
+type HttpResponse<DataType> = {
   status: number;
   headers: http.IncomingHttpHeaders;
-  data?: D;
+  data?: DataType;
 };
 
 type HttpMethodOptions = {
@@ -99,18 +100,18 @@ export class HttpInstance {
     return { headers: {} };
   }
 
-  private static bodyToData<D>(requestResponse: RequestResponse): HttpResponse<D> {
+  private static bodyToData<DataType>(requestResponse: RequestResponse): HttpResponse<DataType> {
     const { status, headers, body } = requestResponse;
     const contentType = headers['content-type'];
     if (body && contentType) {
       if (contentType.includes('application/json')) return { status, headers, data: JSON.parse(body.toString()) };
-      if (contentType.includes('html/text')) return { status, headers, data: (body.toString() as unknown) as D };
+      if (contentType.includes('html/text')) return { status, headers, data: (body.toString() as unknown) as DataType };
       return { status, headers };
     }
     return { status, headers };
   }
 
-  async get<D>(path: string, options?: HttpMethodOptions): ReturningResultAsync<HttpResponse<D>, Error> {
+  async get<DataType>(path: string, options?: HttpMethodOptions): TResultAsync<HttpResponse<DataType>, Error> {
     const urlAndOptions = HttpInstance.prepareUrlAndOptions(
       {
         baseUrl: this.url,
@@ -124,10 +125,10 @@ export class HttpInstance {
       }
     );
     const requestResponse = (await request(urlAndOptions)).unwrap();
-    return ResultOk(HttpInstance.bodyToData<D>(requestResponse));
+    return ok(HttpInstance.bodyToData<DataType>(requestResponse));
   }
 
-  async delete<D>(path: string, options?: HttpMethodOptions): ReturningResultAsync<HttpResponse<D>, Error> {
+  async delete<DataType>(path: string, options?: HttpMethodOptions): TResultAsync<HttpResponse<DataType>, Error> {
     const urlAndOptions = HttpInstance.prepareUrlAndOptions(
       {
         baseUrl: this.url,
@@ -141,14 +142,14 @@ export class HttpInstance {
       }
     );
     const requestResponse = (await request(urlAndOptions)).unwrap();
-    return ResultOk(HttpInstance.bodyToData<D>(requestResponse));
+    return ok(HttpInstance.bodyToData<DataType>(requestResponse));
   }
 
-  async post<D>(
+  async post<DataType>(
     path: string,
     data?: Record<string, unknown> | string,
     options?: HttpMethodOptions
-  ): ReturningResultAsync<HttpResponse<D>, Error> {
+  ): TResultAsync<HttpResponse<DataType>, Error> {
     const { headers, body } = HttpInstance.prepareBody(data);
     const urlAndOptions = HttpInstance.prepareUrlAndOptions(
       {
@@ -164,14 +165,14 @@ export class HttpInstance {
       body
     );
     const requestResponse = (await request(urlAndOptions)).unwrap();
-    return ResultOk(HttpInstance.bodyToData<D>(requestResponse));
+    return ok(HttpInstance.bodyToData<DataType>(requestResponse));
   }
 
-  async put<D>(
+  async put<DataType>(
     path: string,
     data?: Record<string, unknown> | string,
     options?: HttpMethodOptions
-  ): ReturningResultAsync<HttpResponse<D>, Error> {
+  ): TResultAsync<HttpResponse<DataType>, Error> {
     const { headers, body } = HttpInstance.prepareBody(data);
     const urlAndOptions = HttpInstance.prepareUrlAndOptions(
       {
@@ -187,6 +188,6 @@ export class HttpInstance {
       body
     );
     const requestResponse = (await request(urlAndOptions)).unwrap();
-    return ResultOk(HttpInstance.bodyToData<D>(requestResponse));
+    return ok(HttpInstance.bodyToData<DataType>(requestResponse));
   }
 }
