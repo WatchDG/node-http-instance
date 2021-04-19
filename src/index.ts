@@ -69,6 +69,7 @@ export class HttpInstance {
   } {
     const { baseUrl, path } = urlObj;
     const url = new URL(path, baseUrl);
+    url.search = baseUrl.searchParams.toString();
     const { method, options: httpOptions, params, headers } = optionObj;
     const options = Object.assign({ method }, httpOptions);
     if (params) for (const param of Object.keys(params)) url.searchParams.append(param, params[param]);

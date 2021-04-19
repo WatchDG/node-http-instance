@@ -23,7 +23,7 @@
     "fmt": "npx prettier --write \"src/**/*.ts\"",
     "lint": "eslint --ext=ts src",
     "build": "npx tsc",
-    "run": "npx ts-node src/index.ts",
+    "run": "npx ts-node src/main.ts",
     "postinstall": "husky install",
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable",
