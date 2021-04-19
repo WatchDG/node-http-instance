@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as https from 'https';
-import { URL } from 'url';
+import { URL, URLSearchParams } from 'url';
 
 import { ok } from 'node-result';
 import type { TResultAsync } from 'node-result';
@@ -11,6 +11,7 @@ type HttpInstanceOptions = {
   baseUrl: string;
   timeout?: number;
   headers?: { [key: string]: string };
+  params?: { [key: string]: string };
 };
 
 type HttpResponse<DataType> = {
@@ -43,6 +44,9 @@ export class HttpInstance {
 
   constructor(options: HttpInstanceOptions) {
     this.url = new URL(options.baseUrl);
+    if (options.params) {
+      this.url.search = new URLSearchParams(options.params).toString();
+    }
     this.options = {
       headers: Object.assign(
         {
@@ -106,6 +110,12 @@ export class HttpInstance {
     if (body && contentType) {
       if (contentType.includes('application/json')) return { status, headers, data: JSON.parse(body.toString()) };
       if (contentType.includes('html/text')) return { status, headers, data: (body.toString() as unknown) as DataType };
+      if (contentType.includes('text/plain'))
+        return {
+          status,
+          headers,
+          data: (body.toString() as unknown) as DataType
+        };
       return { status, headers };
     }
     return { status, headers };
