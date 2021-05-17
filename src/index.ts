@@ -7,30 +7,30 @@ import type { TResultAsync } from 'node-result';
 
 import { request, RequestResponse, HttpOptions } from 'http-instance-request';
 
-type HttpInstanceOptions = {
+export type HttpInstanceOptions = {
   baseUrl: string;
   timeout?: number;
   headers?: { [key: string]: string };
   params?: { [key: string]: string };
 };
 
-type HttpResponse<DataType> = {
+export type HttpResponse<DataType> = {
   status: number;
   headers: http.IncomingHttpHeaders;
   data?: DataType;
 };
 
-type HttpMethodOptions = {
+export type HttpMethodOptions = {
   headers?: { [key: string]: string };
   params?: { [key: string]: string };
 };
 
-type UrlObj = {
+export type UrlObj = {
   baseUrl: URL;
   path: string;
 };
 
-type OptionObj = {
+export type OptionObj = {
   method: 'GET' | 'DELETE' | 'POST' | 'PUT';
   options: HttpOptions;
   headers?: { [key: string]: string };
@@ -110,12 +110,12 @@ export class HttpInstance {
     const contentType = headers['content-type'];
     if (body && contentType) {
       if (contentType.includes('application/json')) return { status, headers, data: JSON.parse(body.toString()) };
-      if (contentType.includes('html/text')) return { status, headers, data: (body.toString() as unknown) as DataType };
+      if (contentType.includes('html/text')) return { status, headers, data: body.toString() as unknown as DataType };
       if (contentType.includes('text/plain'))
         return {
           status,
           headers,
-          data: (body.toString() as unknown) as DataType
+          data: body.toString() as unknown as DataType
         };
       return { status, headers };
     }

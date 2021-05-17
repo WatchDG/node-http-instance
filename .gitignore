@@ -1,6 +1,7 @@
 /.idea
 /node_modules
 /lib
+/.yarn
 /src/main.ts
 package-lock.json
 yarn.lock
